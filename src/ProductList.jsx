@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import './ProductList.css'
 import CartItem from './CartItem';
+import { useSelector, useDispatch } from 'react-redux';
+import { addItem } from './CartSlice';
+
 function ProductList({ onHomeClick }) {
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
@@ -254,12 +257,16 @@ function ProductList({ onHomeClick }) {
         setShowCart(false);
     };
 
+    const cartCount = useSelector((state) =>
+      state.cart.items.reduce((sum, it) => sum + it.quantity, 0)
+    );
+
+    const dispatch = useDispatch();
+
     const handleAddToCart = (product, categoryName) => {
+      dispatch(addItem(product));
       const key = `${categoryName}-${product.name}`;
-      setAddedToCart((prev) => ({
-        ...prev,
-        [key]: true,
-      }));
+      setAddedToCart(prev => ({ ...prev, [key]: true }));
     };
 
     return (
@@ -294,7 +301,6 @@ function ProductList({ onHomeClick }) {
                               <img className="product-image" src={plant.image} alt={plant.name} />
                               <h3 className="product-title">{plant.name}</h3>
                               <p className="product-description">{plant.description}</p>
-                              {/* o seu cost JÁ tem '$', então não use ${plant.cost} */}
                               <p className="product-cost">{plant.cost}</p>
 
                                 <button
